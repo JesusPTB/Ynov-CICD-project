@@ -46,7 +46,7 @@ jobs:
           if [[ $BRANCH_NAME == "main" ]]; then
             TAG=latest
           fi
-          echo "TAG=TAG" >> $GITHUB_ENV
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
       - name: Get tag from branch name (pull request)
         if: github.event_name == 'pull_request'
