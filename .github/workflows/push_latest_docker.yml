@@ -8,13 +8,14 @@ jobs:
   build-and-push-images:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - dockerfile: front-end-react/Dockerfile
+          - dockerfile: ./front-end-react/Dockerfile
             image: jesusptb/front-end-react:latest
-          - dockerfile: order-service/Dockerfile
+          - dockerfile: ./order-service/Dockerfile
             image: jesusptb/order-service:latest
-          - dockerfile: user-service/Dockerfile
+          - dockerfile: ./user-service/Dockerfile
             image: jesusptb/user-service:latest
 
     steps:
