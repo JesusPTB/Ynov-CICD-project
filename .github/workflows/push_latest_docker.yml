@@ -43,7 +43,7 @@ jobs:
         shell: bash
         run: |
           TAG=$(echo ${GITHUB_REF#refs/heads/} | awk -F/ '{print $NF}')
-          if [[ $BRANCH_NAME == "main" ]]; then
+          if [[ $TAG == "main" ]]; then
             TAG=latest
           fi
           echo "TAG=$TAG" >> $GITHUB_ENV
@@ -53,7 +53,7 @@ jobs:
         shell: bash
         run: |
           TAG=$(echo ${GITHUB_HEAD_REF} } | awk -F/ '{print $NF}')
-          if [[ $BRANCH_NAME == "main" ]]; then
+          if [[ $TAG == "main" ]]; then
             TAG=latest
           fi
           echo "TAG=$TAG" >> $GITHUB_ENV
