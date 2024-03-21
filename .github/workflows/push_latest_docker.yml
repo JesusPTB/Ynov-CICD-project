@@ -11,11 +11,11 @@ jobs:
       matrix:
         include:
           - dockerfile: front-end-react/Dockerfile
-            image: ${{ secrets.DOCKERHUB_USERNAME }}/front-end-react:latest
+            image: jesusptb/front-end-react:latest
           - dockerfile: order-service/Dockerfile
-            image: ${{ secrets.DOCKERHUB_USERNAME }}/order-service:latest
+            image: jesusptb/order-service:latest
           - dockerfile: user-service/Dockerfile
-            image: ${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest
+            image: jesusptb/user-service:latest
 
     steps:
       - name: Set up QEMU
