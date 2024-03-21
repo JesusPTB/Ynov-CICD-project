@@ -31,18 +31,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push front-end-react image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./front-end-react
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/front-end-react:latest
-      - name: Build and push order-service image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./order-service
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/order-service:latest
       - name: Build and push user-service image
         uses: docker/build-push-action@v5
         with:
