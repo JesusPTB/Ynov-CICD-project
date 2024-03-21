@@ -16,6 +16,9 @@ jobs:
           - dockerfile: ./user-service/Dockerfile
 
     steps:
+      - name: list files
+        run: ls -la
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
