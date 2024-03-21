@@ -46,13 +46,13 @@ jobs:
         if: github.event_name != 'pull_request'
         id: branch_name
         shell: bash
-        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | awk -F/ '{print $NF}')"
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | awk -F/ '{print $NF}')" >> $GITHUB_ENV
 
       - name: Get branch name (pull request)
         id: branch_name
         if: github.event_name == 'pull_request'
         shell: bash
-        run: echo "BRANCH_NAME=$(echo ${GITHUB_HEAD_REF} | awk -F/ '{print $NF}')"
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_HEAD_REF} | awk -F/ '{print $NF}')" >> $GITHUB_ENV
 
       - name: Build and push Docker images
         uses: docker/build-push-action@v5
@@ -61,4 +61,4 @@ jobs:
           file: ${{ matrix.dockerfile }}
           push: true
 #          tags: ${{ steps.meta.outputs.tags }} # To use for versioning with branches
-          tags: ${{ matrix.image }}:${{ steps.branch_name.outputs.BRANCH_NAME }}
+          tags: ${{ matrix.image }}:{{env.BRANCH_NAME}}
