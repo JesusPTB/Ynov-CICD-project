@@ -59,4 +59,4 @@ jobs:
           file: ${{ matrix.dockerfile }}
           push: true
 #          tags: ${{ steps.meta.outputs.tags }} # To use for versioning with branches
-          tags: ${{ matrix.image }}:{{env.BRANCH_NAME}}
+          tags: ${{ matrix.image }}:${{ env.BRANCH_NAME }}
