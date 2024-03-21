@@ -12,13 +12,13 @@ jobs:
       matrix:
         include:
           - dockerfile: ./front-end-react/Dockerfile
-            image: ${{ secrets.DOCKERHUB_USERNAME }}/front-end-react
+            image: jesusptb/front-end-react
             context: ./front-end-react
           - dockerfile: ./order-service/Dockerfile
-            image: ${{ secrets.DOCKERHUB_USERNAME }}/order-service
+            image: jesusptb/order-service
             context: ./order-service
           - dockerfile: ./user-service/Dockerfile
-            image: ${{ secrets.DOCKERHUB_USERNAME }}/user-service
+            image: jesusptb/user-service
             context: ./user-service
     permissions:
       contents: read
