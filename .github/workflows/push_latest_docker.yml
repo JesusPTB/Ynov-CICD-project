@@ -17,6 +17,10 @@ jobs:
             context: ./order-service
           - dockerfile: ./user-service/Dockerfile
             context: ./user-service
+    permissions:
+      contents: read
+      packages: write
+
 
     steps:
       - name: Checkout code
