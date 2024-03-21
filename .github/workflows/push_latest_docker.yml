@@ -17,6 +17,9 @@ jobs:
             image: jesusptb/order-service:latest
           - dockerfile: ./user-service/Dockerfile
             image: jesusptb/user-service:latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Set up QEMU
