@@ -44,12 +44,10 @@ jobs:
 
       - name: Get branch name (merge)
         if: github.event_name != 'pull_request'
-        id: branch_name
         shell: bash
         run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | awk -F/ '{print $NF}')" >> $GITHUB_ENV
 
       - name: Get branch name (pull request)
-        id: branch_name
         if: github.event_name == 'pull_request'
         shell: bash
         run: echo "BRANCH_NAME=$(echo ${GITHUB_HEAD_REF} | awk -F/ '{print $NF}')" >> $GITHUB_ENV
