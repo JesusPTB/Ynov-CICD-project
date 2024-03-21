@@ -2,7 +2,7 @@ name: Push docker images to Docker Hub
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "version/**" ]
 
 jobs:
   build-and-push-images:
@@ -20,6 +20,7 @@ jobs:
           - dockerfile: ./user-service/Dockerfile
             image: jesusptb/user-service
             context: ./user-service
+
     permissions:
       contents: read
       packages: write
@@ -44,6 +45,16 @@ jobs:
 #        with:
 #          images: ${{ matrix.image }}
 
+      - name: Set tag based on branch name
+        id: set_tag
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "::set-output name=tag::latest"
+          elif [[ "${{ github.ref }}" == refs/heads/version/* ]]; then
+            version=${{ github.ref }} # extract version number from branch name
+            echo "::set-output name=tag::$version"
+          fi
+
       - name: Build and push Docker images
         uses: docker/build-push-action@v5
         with:
@@ -51,4 +62,4 @@ jobs:
           file: ${{ matrix.dockerfile }}
           push: true
 #          tags: ${{ steps.meta.outputs.tags }} # To use for versioning with branches
-          tags: ${{ matrix.image }}:latest
+          tags: ${{ matrix.image }}:${{ steps.set_tag.outputs.tag }}
