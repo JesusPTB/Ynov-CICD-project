@@ -3,6 +3,8 @@ name: Push docker images to Docker Hub
 on:
   push:
     branches: [ "main", "version/**" ]
+  pull_request:
+    branches: [ "main", "version/**" ]
 
 jobs:
   build-and-push-images:
@@ -36,21 +38,25 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-#      - name: Extract metadata (tags, labels) for Docker
-#        id: meta
-#        uses: docker/metadata-action@v5
-#        with:
-#          images: ${{ matrix.image }}
-
-      - name: Get branch name (merge)
+      - name: Get tag from branch name (merge)
         if: github.event_name != 'pull_request'
         shell: bash
-        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | awk -F/ '{print $NF}')" >> $GITHUB_ENV
+        run: |
+          TAG=$(echo ${GITHUB_REF#refs/heads/} | awk -F/ '{print $NF}')
+          if [[ $BRANCH_NAME == "main" ]]; then
+            TAG=latest
+          fi
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
-      - name: Get branch name (pull request)
+      - name: Get tag from branch name (pull request)
         if: github.event_name == 'pull_request'
         shell: bash
-        run: echo "BRANCH_NAME=$(echo ${GITHUB_HEAD_REF} | awk -F/ '{print $NF}')" >> $GITHUB_ENV
+        run: |
+          TAG=$(echo ${GITHUB_REF#refs/heads/} | awk -F/ '{print $NF}')
+          if [[ $BRANCH_NAME == "main" ]]; then
+            TAG=latest
+          fi
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
       - name: Build and push Docker images
         uses: docker/build-push-action@v5
@@ -58,5 +64,4 @@ jobs:
           context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
           push: true
-#          tags: ${{ steps.meta.outputs.tags }} # To use for versioning with branches
-          tags: ${{ matrix.image }}:${{ env.BRANCH_NAME }}
+          tags: ${{ matrix.image }}:${{ env.TAG }}
