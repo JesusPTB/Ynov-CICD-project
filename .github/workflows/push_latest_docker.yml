@@ -56,7 +56,7 @@ jobs:
           if [[ $BRANCH_NAME == "main" ]]; then
             TAG=latest
           fi
-          echo "TAG=TAG" >> $GITHUB_ENV
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
       - name: Build and push Docker images
         uses: docker/build-push-action@v5
