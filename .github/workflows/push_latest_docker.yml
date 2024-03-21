@@ -52,7 +52,7 @@ jobs:
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
-          TAG=$(echo ${GITHUB_REF#refs/heads/} | awk -F/ '{print $NF}')
+          TAG=$(echo ${GITHUB_HEAD_REF} } | awk -F/ '{print $NF}')
           if [[ $BRANCH_NAME == "main" ]]; then
             TAG=latest
           fi
