@@ -1,0 +1,43 @@
+services:
+  frontend:
+    build:
+      context: front-end-react
+    ports:
+      - 3000:3000
+    volumes:
+      - ./front-end-react:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: always
+    depends_on:
+      - order-service
+      - user-service
+
+  order-service:
+    build:
+      context: order-service
+    volumes:
+      - ./order-service:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: always
+    ports:
+      - 3002:3002
+    expose:
+      - 3002:3002
+
+  user-service:
+    build:
+        context: user-service
+    stop_signal: SIGINT
+    volumes:
+      - ./user-service:/usr/src/app
+    ports:
+      - 3001:3001
+    expose:
+      - 3001:3001
+    depends_on:
+      - mongo-service
+
+  mongo-service:
+    image: mongo
+    ports:
+      - "27017:27017"

@@ -1,0 +1,4 @@
+/user-service/venv/
+/order-service/node_modules/
+/front-end-react/node_modules/
+.idea/
