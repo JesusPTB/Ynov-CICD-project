@@ -5,8 +5,17 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-and-push-images:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - dockerfile: front-end-react/Dockerfile
+            image: ${{ secrets.DOCKERHUB_USERNAME }}/front-end-react:latest
+          - dockerfile: order-service/Dockerfile
+            image: ${{ secrets.DOCKERHUB_USERNAME }}/order-service:latest
+          - dockerfile: user-service/Dockerfile
+            image: ${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest
 
     steps:
       - name: Set up QEMU
@@ -33,6 +42,8 @@ jobs:
       - name: Build and push user-service image
         uses: docker/build-push-action@v5
         with:
-          context: ./user-service
+          context: .
+          file: ${{ matrix.dockerfile }}
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
