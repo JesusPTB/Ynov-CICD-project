@@ -1,49 +1,40 @@
-# Projet : Mise en place du CICD dans un environnement Kubernetes pour une application de microservices
+**1. Configuration en Local**
++ Afin de pouvoir lancer l'application python il faut prendre une version plus récente de flask, par exemple ```Flask>=2.2.0```
 
-## Contexte
-Vous travaillez sur le déploiement d'une application composée de microservices dans un environnement Kubernetes. L'application est constituée de quatre services : le frontend React, le service de gestion des ordres, le service utilisateur interagissant avec une base de données MongoDB, et enfin, une instance MongoDB.
+**2. Dockerization** 
++ Création des différents Dockerfile puis d'un fichier compose afin de tester en local.
++ ```client = MongoClient('mongodb://localhost:27017/')``` -> changer localhost par le nom du service mongo car l'app appel la bdd depuis le conteneur. Ici, ```mongo-service```. 
++ Pas besoin de changer l'adresse qui est localhost lors de l'appel des services depuis le front pour le moment car le front appel les services depuis l'extérieur de docker (depuis la machine)
++ J'ai du changer la ligne ``` app.run(port=3001)``` en ``` app.run(host='0.0.0.0', port=3001)``` pour que l'application accepte les connexions de ma machine.
++ Créer repo depuis l'interface web de DockerHub
++ Tagger l'image
++ Push l'image
 
-## Étapes du Projet :
+**3 & 4. Pipeline & Versionning** 
++ Pour github avec dockerhub :
+	+ Créer un repo sur Github et y tranverser tous les fichiers
+	+ Créer un fichier yaml dans le répertoire ```./github/workflows```
+	+ Décrire les différentes étapes du CI dans le fichier yaml
+	+ Générer un token d'authentification sur DockerHub
+	+ Se rendre dans l'interface des secrets de github actions
+	  ``${URL_DU_REPOT_GITHUB}/settings/secrets/actions
+	+ Renseigner le token et l'username
+* Dans le fichier donné, lors d'un push/merge/pull-request sur les branches main ou version/** une image est crée et envoyée sur le repository DockerHub
+* Lors d'une action sur une branche ```version/**```, une image avec le tag ```image:**``` sera crée, si l'action est sur la branche main, une image avec le tag ```image:latest``` sera crée
+* Ex: 
+	* Je pousse sur la branche version/1.0.1 sur git
+	* Une image user-service:1.0.1 (pour les autres services également, mais pour l'exemple) est crée et poussée sur DockerHub
+	* Je fais une pull request vers main depuis ma branche version/1.0.1
+	* Une image user-service:latest est crée et poussée sur DockerHub
 
-**1. Configuration en Local :**
-   - Configurez et testez l'application en microservices localement.
-   - Assurez-vous que les services communiquent correctement entre eux en utilisant les noms de services suivants :
-     - `frontend` pour le frontend React,
-     - `order-service` pour le service de gestion des ordres,
-     - `user-service` pour le service utilisateur,
-     - `mongo-service` pour la base de données MongoDB.
-
-**2. Dockerization :**
-   - Rédigez des fichiers Dockerfile pour chacun des trois services développés.
-   - Assurez-vous que les images construites sont stockées dans un repository privé. Vous pouvez utiliser votre compte privé DockerHub pour cela.
-
-**3. Mise en place du Pipeline CI :**
-   - Utilisez votre outil CI préféré pour mettre en place un pipeline qui construit les images de chaque service à partir des Dockerfiles.
-   - Assurez-vous que les images sont correctement poussées dans le repository privé.
-
-**4. Versioning :**
-   - Mettez en place un second pipeline qui se déclenche automatiquement lors de la création d'une branche correspondant à la version de l'application (ex : `2.0.0`) et lorsque le code est poussé dans cette branche.
-   - Ce pipeline doit construire des images avec des tags correspondant à la version (ex : `dockerhubloginname/user-service:2.0.0`) et les pousser dans le repository privé.
-
-**5. Déploiement dans Kubernetes :**
-   - Effectuez une mise à jour des fichiers de déploiement Kubernetes pour refléter les nouvelles images.
-   - Poussez ces fichiers de déploiement dans un repository Git séparé, nommé `microapp-deploy`.
-
-**6. Déploiement avec ArgoCD :**
-   - Configurez une installation d'ArgoCD sur le cluster Kubernetes.
-   - Faites en sorte qu'ArgoCD récupère automatiquement les fichiers de déploiement du repository Git `microapp-deploy` et les déploie sur le cluster.
-
-**Livraison :**
-   - Documentez le processus complet et assurez-vous que l'équipe puisse suivre et reproduire les étapes de déploiement.
-   - Assurez-vous que le CICD est opérationnel, garantissant un déploiement automatisé et cohérent de l'application dans l'environnement Kubernetes.
-
-## Exigences du projet
-
-- Tous les microservices doivent s'exécuter en environement de conteneurisation
-- la base de données MongoDB doit être un Object StatefulSet avec une persistance de donnée
-- Le microservice frontend doit être accessible en dehors du cluster Kubernetes (en utilisant un service `NodePort` ou `LoadBalancer`)
-
-## Bonus 
-
-- Refaites l'étape 5 sans intervention manuelle en utilisant un pipeline ou un outil d'automatisation.
-- Sécurisez l'accès à la base de donnée à l'aide d'un mot de passe que vous allez créer avec l'objet `secret` de Kuberenetes.
+**6. Déploiement avec ArgoCD**
++ Installer minkikube
+ + Installer argo cd 
+```
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
++ Créer un fichier de déploiement et l'appeler par exemple ``deploy-argo.yaml``
++ Y décrire les différentes specs du projet telles que la source, le namespace
++ ``kubectl apply -f {{NOM_DU_FICHIER}}``
++ 
